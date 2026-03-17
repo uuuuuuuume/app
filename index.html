@@ -1,1 +1,105 @@
-a
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <title>宝探しゲーム</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      background: #f0f8ff;
+    }
+
+    h1 {
+      color: #ff69b4;
+    }
+
+    #grid {
+      display: grid;
+      grid-template-columns: repeat(5, 60px);
+      gap: 10px;
+      justify-content: center;
+      margin-top: 20px;
+    }
+
+    .cell {
+      width: 60px;
+      height: 60px;
+      background: #add8e6;
+      border-radius: 10px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 24px;
+    }
+
+    .found {
+      background: gold;
+    }
+
+    .miss {
+      background: #ddd;
+    }
+
+    button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #ff69b4;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1>宝探しゲーム 💎</h1>
+<p>どこかに宝が隠れているよ！見つけてね！</p>
+
+<div id="grid"></div>
+<p id="message"></p>
+<button onclick="resetGame()">もう一回遊ぶ</button>
+
+<script>
+  const grid = document.getElementById("grid");
+  const message = document.getElementById("message");
+  let treasureIndex;
+
+  function createGrid() {
+    grid.innerHTML = "";
+    treasureIndex = Math.floor(Math.random() * 25);
+
+    for (let i = 0; i < 25; i++) {
+      const cell = document.createElement("div");
+      cell.classList.add("cell");
+      cell.addEventListener("click", () => checkCell(cell, i));
+      grid.appendChild(cell);
+    }
+  }
+
+  function checkCell(cell, index) {
+    if (cell.classList.contains("found") || cell.classList.contains("miss")) return;
+
+    if (index === treasureIndex) {
+      cell.textContent = "💎";
+      cell.classList.add("found");
+      message.textContent = "おめでとう！宝を見つけた！✨";
+    } else {
+      cell.textContent = "❌";
+      cell.classList.add("miss");
+    }
+  }
+
+  function resetGame() {
+    message.textContent = "";
+    createGrid();
+  }
+
+  createGrid();
+</script>
+
+</body>
+</html>
