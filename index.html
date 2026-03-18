@@ -25,4 +25,136 @@
     .cell {
       width: 60px;
       height: 60px;
-      background:
+      background: #87cefa;
+      border-radius: 12px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      transition: transform 0.2s;
+    }
+
+    .cell:hover { transform: scale(1.1); }
+
+    .found { background: gold; }
+    .miss { background: #ddd; }
+
+    button {
+      margin-top: 15px;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      background: #ff69b4;
+      color: white;
+      font-size: 16px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+<h1>宝探しゲーム 💎✨</h1>
+<p>宝は3つ隠れているよ！全部見つけられるかな？</p>
+
+<div id="info">
+  残り回数: <span id="tries">15</span> ｜ 見つけた宝: <span id="found">0</span>/3 ｜ タイム: <span id="time">0</span>s
+</div>
+
+<div id="grid"></div>
+<p id="message"></p>
+<button onclick="resetGame()">もう一回遊ぶ</button>
+
+<script>
+  const grid = document.getElementById("grid");
+  const message = document.getElementById("message");
+  const triesDisplay = document.getElementById("tries");
+  const foundDisplay = document.getElementById("found");
+  const timeDisplay = document.getElementById("time");
+
+  let treasures = [];
+  let tries = 15;
+  let found = 0;
+  let timer;
+  let time = 0;
+
+  function startTimer() {
+    clearInterval(timer);
+    timer = setInterval(() => {
+      time++;
+      timeDisplay.textContent = time;
+    }, 1000);
+  }
+
+  function createGrid() {
+    grid.innerHTML = "";
+    treasures = [];
+    found = 0;
+    tries = 15;
+    time = 0;
+    message.textContent = "";
+
+    while (treasures.length < 3) {
+      let rand = Math.floor(Math.random() * 36);
+      if (!treasures.includes(rand)) treasures.push(rand);
+    }
+
+    for (let i = 0; i < 36; i++) {
+      const cell = document.createElement("div");
+      cell.classList.add("cell");
+      cell.addEventListener("click", () => checkCell(cell, i));
+      grid.appendChild(cell);
+    }
+
+    updateInfo();
+    startTimer();
+  }
+
+  function checkCell(cell, index) {
+    if (cell.classList.contains("found") || cell.classList.contains("miss") || tries <= 0) return;
+
+    tries--;
+
+    if (treasures.includes(index)) {
+      cell.textContent = "💎";
+      cell.classList.add("found");
+      found++;
+      message.textContent = "当たり！✨";
+    } else {
+      cell.textContent = "❌";
+      cell.classList.add("miss");
+      message.textContent = getHint(index);
+    }
+
+    updateInfo();
+
+    if (found === 3) {
+      message.textContent = "全部見つけた！すごい！🎉";
+      clearInterval(timer);
+    } else if (tries === 0) {
+      message.textContent = "ゲームオーバー…😢";
+      clearInterval(timer);
+    }
+  }
+
+  function getHint(index) {
+    let closest = Math.min(...treasures.map(t => Math.abs(t - index)));
+    if (closest <= 1) return "🔥 すごく近い！";
+    if (closest <= 3) return "🌡️ 近い！";
+    return "❄️ 遠い…";
+  }
+
+  function updateInfo() {
+    triesDisplay.textContent = tries;
+    foundDisplay.textContent = found;
+  }
+
+  function resetGame() {
+    createGrid();
+  }
+
+  createGrid();
+</script>
+
+</body>
+</html>
